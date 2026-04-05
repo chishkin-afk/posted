@@ -1,0 +1,32 @@
+app:
+  name: posted-object-service
+  version: 0.0.1
+  env: ${APP_ENV}
+
+server:
+  http:
+    addr: ${HTTP_ADDR}
+    tls:
+      enable: false
+      server_cert_path: ./certs/server.crt
+      server_key_path: ./certs/server.key
+  read_timeout: 1m
+  write_timeout: 1m
+  idle_timeout: 3m
+
+database:
+  postgres:
+    host: ${POSTGRES_HOST}
+    port: ${POSTGRES_PORT}
+    dbname: ${POSTGRES_DBNAME}
+    auth:
+      user: ${POSTGRES_USER}
+      password: ${POSTGRES_PASSWORD}
+    conn:
+      max_idles: 20
+      max_opens: 10
+      max_idle_time: 30m
+      max_lifetime: 15m
+
+storage:
+  base_path: ./files

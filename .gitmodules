@@ -1,0 +1,3 @@
+[submodule "contracts/third_party/protovalidate"]
+	path = contracts/third_party/protovalidate
+	url = https://github.com/bufbuild/protovalidate

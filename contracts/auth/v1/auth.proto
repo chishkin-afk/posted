@@ -1,0 +1,131 @@
+syntax = "proto3";
+package auth.v1;
+
+option go_package = "github.com/chishkin-afk/posted/auth;authpb";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+import "proto/protovalidate/buf/validate/validate.proto";
+
+message User {
+    string id = 1 [
+        (buf.validate.field).required = true,
+        (buf.validate.field).string.uuid = true
+    ];
+    string email = 2 [
+        (buf.validate.field).required = true,
+        (buf.validate.field).string.email = true
+    ];
+    
+    string nickname = 3 [
+        (buf.validate.field).required = true,
+        (buf.validate.field).string.min_len = 3,
+        (buf.validate.field).string.max_len = 64
+    ];
+    string avatar_object_id = 4 [
+        (buf.validate.field).required = true
+    ];
+
+    google.protobuf.Timestamp created_at = 5;
+    google.protobuf.Timestamp updated_at = 6;
+
+    reserved 7 to 15;
+}
+
+message Token {
+    string access = 1 [
+        (buf.validate.field).required = true
+    ];
+    string refresh = 2 [
+        (buf.validate.field).required = true,
+        (buf.validate.field).string.len = 32
+    ];
+
+    int64 access_ttl = 3 [
+        (buf.validate.field).required = true
+    ];
+    int64 refresh_ttl = 4 [
+        (buf.validate.field).required = true
+    ];
+}
+
+service AuthService {
+    // Create new user and generating the token
+    rpc Register(RegisterRequest) returns (Token);
+    // Generate a new pair of tokens
+    rpc Login(LoginRequest) returns (Token);   
+    // Generate a new pair of tokens by refresh
+    rpc Refresh(RefreshRequest) returns (Token);
+
+    // Update the fields of user
+    // METADATA: authorization
+    rpc UpdateUser(UpdateRequest) returns (User);
+    // Delete the user by token
+    // METADATA: authorization
+    rpc DeleteUser(google.protobuf.Empty) returns (google.protobuf.Empty);
+    // Get user by token
+    // METADATA: authorization
+    rpc GetUserSelf(google.protobuf.Empty) returns (User);
+    // Get user by id
+    rpc GetUserByID(GetByIDRequest) returns (User);
+}
+
+message RegisterRequest {
+    string email = 1 [
+        (buf.validate.field).required = true,
+        (buf.validate.field).string.email = true
+    ];
+    string password = 2 [
+        (buf.validate.field).required = true,
+        (buf.validate.field).string.min_len = 6,
+        (buf.validate.field).string.max_len = 64
+    ];
+    string nickname = 3 [
+        (buf.validate.field).required = true,
+        (buf.validate.field).string.min_len = 3,
+        (buf.validate.field).string.max_len = 64
+    ];
+    File avatar = 4;
+}
+
+message LoginRequest {
+    string email = 1 [
+        (buf.validate.field).required = true,
+        (buf.validate.field).string.email = true
+    ];
+    string password = 2 [
+        (buf.validate.field).required = true,
+        (buf.validate.field).string.min_len = 6,
+        (buf.validate.field).string.max_len = 64
+    ];
+}
+
+message RefreshRequest {
+    string refresh_token = 1 [
+        (buf.validate.field).required = true,
+        (buf.validate.field).string.len = 32
+    ];
+}
+
+message Updates {
+    string email = 1;
+    string nickname = 2;
+    File avatar = 3;
+}
+
+message UpdateRequest {
+    Updates updates = 1;
+    repeated string update_mask = 2;
+}
+
+message GetByIDRequest {
+    string id = 1 [
+        (buf.validate.field).required = true,
+        (buf.validate.field).string.uuid = true
+    ];
+}
+
+message File {
+    string filename = 1;
+    bytes body = 2;
+}

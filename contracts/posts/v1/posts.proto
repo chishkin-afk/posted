@@ -1,0 +1,123 @@
+syntax = "proto3";
+package posts.v1;
+
+option go_package = "github.com/chishkin-afk/posted/posts;postspb";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+import "proto/protovalidate/buf/validate/validate.proto";
+
+message Post {
+    string id = 1 [
+        (buf.validate.field).required = true,
+        (buf.validate.field).string.uuid = true
+    ];
+    string owner_id = 2 [
+        (buf.validate.field).required = true,
+        (buf.validate.field).string.uuid = true
+    ];
+    string title = 3 [
+        (buf.validate.field).required = true,
+        (buf.validate.field).string.min_len = 3,
+        (buf.validate.field).string.max_len = 64
+    ];
+    string body = 4 [
+        (buf.validate.field).required = true,
+        (buf.validate.field).string.min_len = 3,
+        (buf.validate.field).string.max_len = 512
+    ];
+    
+    repeated string pinned_file_urls = 5;
+
+    google.protobuf.Timestamp posted_at = 6;
+    google.protobuf.Timestamp updated_at = 7;
+
+    reserved 8 to 15;
+}
+
+message Posts {
+    repeated Post posts = 1;
+}
+
+service PostsService {
+    // Create a new post
+    // METADATA: authorization
+    rpc Create(CreateRequest) returns (Post);
+    // Update the fields of existed post
+    // METADATA: authorization
+    rpc Update(UpdateRequest) returns (Post);
+    // Delete the post
+    // METADATA: authorization
+    rpc Delete(DeleteRequest) returns (google.protobuf.Empty);
+    // Get post by id
+    rpc GetByID(GetByIDRequest) returns (Post);
+    // Get self posts (with pagination)
+    // METADATA: authorization
+    rpc GetSelfPosts(GetPostsRequest) returns (Posts);
+}
+
+message CreateRequest {
+    string title = 1 [
+        (buf.validate.field).required = true,
+        (buf.validate.field).string.min_len = 3,
+        (buf.validate.field).string.max_len = 64
+    ];
+    string body = 2 [
+        (buf.validate.field).required = true,
+        (buf.validate.field).string.min_len = 3,
+        (buf.validate.field).string.max_len = 512
+    ];
+
+    repeated File pinned_files = 3;
+}
+
+message Updates {
+    string title = 1 [
+        (buf.validate.field).required = true,
+        (buf.validate.field).string.min_len = 3,
+        (buf.validate.field).string.max_len = 64
+    ];
+    string body = 2 [
+        (buf.validate.field).required = true,
+        (buf.validate.field).string.min_len = 3,
+        (buf.validate.field).string.max_len = 512
+    ];
+    repeated File pinned_files = 3;
+}
+
+message UpdateRequest {
+    Updates updates = 1 [
+        (buf.validate.field).required = true
+    ];
+    repeated string update_mask = 2 [
+        (buf.validate.field).required = true,
+        (buf.validate.field).repeated.min_items = 1
+    ];
+}
+
+message DeleteRequest {
+    string post_id = 1 [
+        (buf.validate.field).required = true,
+        (buf.validate.field).string.uuid = true
+    ];
+}
+
+message GetByIDRequest {
+    string post_id = 1 [
+        (buf.validate.field).required = true,
+        (buf.validate.field).string.uuid = true
+    ];
+}
+
+message GetPostsRequest {
+    uint32 page = 1;
+    uint32 limit = 2 [
+        (buf.validate.field).required = true,
+        (buf.validate.field).uint32.lte = 100
+    ];
+}
+
+message File {
+    string filename = 1;
+    bytes body = 2;
+}

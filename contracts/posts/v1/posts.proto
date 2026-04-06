@@ -27,8 +27,6 @@ message Post {
         (buf.validate.field).string.max_len = 512
     ];
     
-    repeated string pinned_file_urls = 5;
-
     google.protobuf.Timestamp posted_at = 6;
     google.protobuf.Timestamp updated_at = 7;
 
@@ -67,8 +65,6 @@ message CreateRequest {
         (buf.validate.field).string.min_len = 3,
         (buf.validate.field).string.max_len = 512
     ];
-
-    repeated File pinned_files = 3;
 }
 
 message Updates {
@@ -82,7 +78,6 @@ message Updates {
         (buf.validate.field).string.min_len = 3,
         (buf.validate.field).string.max_len = 512
     ];
-    repeated File pinned_files = 3;
 }
 
 message UpdateRequest {
@@ -115,9 +110,4 @@ message GetPostsRequest {
         (buf.validate.field).required = true,
         (buf.validate.field).uint32.lte = 100
     ];
-}
-
-message File {
-    string filename = 1;
-    bytes body = 2;
 }

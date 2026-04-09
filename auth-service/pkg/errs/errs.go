@@ -11,4 +11,7 @@ var (
 	// Repository's
 	ErrUserAlreadyExists = errors.New("user already exists")
 	ErrUserDoesntExist   = errors.New("user doesn't exist")
+
+	// General's
+	ErrInvalidToken = errors.New("invalid token")
 )

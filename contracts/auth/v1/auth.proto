@@ -33,15 +33,8 @@ message Token {
     string access = 1 [
         (buf.validate.field).required = true
     ];
-    string refresh = 2 [
-        (buf.validate.field).required = true,
-        (buf.validate.field).string.len = 32
-    ];
 
     int64 access_ttl = 3 [
-        (buf.validate.field).required = true
-    ];
-    int64 refresh_ttl = 4 [
         (buf.validate.field).required = true
     ];
 }
@@ -51,8 +44,6 @@ service AuthService {
     rpc Register(RegisterRequest) returns (Token);
     // Generate a new pair of tokens
     rpc Login(LoginRequest) returns (Token);   
-    // Generate a new pair of tokens by refresh
-    rpc Refresh(RefreshRequest) returns (Token);
 
     // Update the fields of user
     // METADATA: authorization
@@ -93,13 +84,6 @@ message LoginRequest {
         (buf.validate.field).required = true,
         (buf.validate.field).string.min_len = 6,
         (buf.validate.field).string.max_len = 64
-    ];
-}
-
-message RefreshRequest {
-    string refresh_token = 1 [
-        (buf.validate.field).required = true,
-        (buf.validate.field).string.len = 32
     ];
 }
 

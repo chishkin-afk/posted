@@ -1,9 +1,7 @@
 package jwt
 
 import (
-	"crypto/rand"
 	"crypto/rsa"
-	"encoding/hex"
 	"fmt"
 	"os"
 	"time"
@@ -56,15 +54,6 @@ func (jm *jwtManager) GenerateAccess(userID uuid.UUID) (string, error) {
 	}
 
 	return signedToken, nil
-}
-
-func (jm *jwtManager) GenerateRefresh() (string, error) {
-	buf := make([]byte, 32)
-	if _, err := rand.Read(buf); err != nil {
-		return "", fmt.Errorf("failed to generate random bytes: %w", err)
-	}
-
-	return hex.EncodeToString(buf), nil
 }
 
 func (jm *jwtManager) Validate(tokenString string) (uuid.UUID, error) {

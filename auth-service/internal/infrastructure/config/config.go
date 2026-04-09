@@ -70,7 +70,6 @@ type Cache struct {
 }
 
 type Session struct {
-	RefreshTTL     time.Duration `yaml:"refresh_ttl" validate:"required,min=100ms"`
 	AccessTTL      time.Duration `yaml:"access_ttl" validate:"required,min=100ms"`
 	PublicKeyPath  string        `yaml:"public_key_path" validate:"required,file"`
 	PrivateKeyPath string        `yaml:"private_key_path" validate:"required,file"`

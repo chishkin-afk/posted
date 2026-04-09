@@ -13,6 +13,10 @@ func (ph PasswordHash) String() string {
 	return string(ph)
 }
 
+func (ph PasswordHash) Compare(password string) bool {
+	return bcrypt.CompareHashAndPassword([]byte(ph), []byte(password)) == nil
+}
+
 func NewPasswordHash(password string) (PasswordHash, error) {
 	password = strings.TrimSpace(password)
 

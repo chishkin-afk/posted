@@ -13,5 +13,8 @@ var (
 	ErrUserDoesntExist   = errors.New("user doesn't exist")
 
 	// General's
-	ErrInvalidToken = errors.New("invalid token")
+	ErrInvalidToken       = errors.New("invalid token")
+	ErrInternalServer     = errors.New("internal server error")
+	ErrInvalidCredentials = errors.New("invalid credentials")
+	ErrInvalidUserID      = errors.New("invalid user's id")
 )

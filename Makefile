@@ -1,5 +1,5 @@
 PROTO_SERVICE ?= unknown
-PROTO_VERSION ?= v1
+PROTO_VERSION ?= v1s
 GEN_PATH ?= ./
 
 .PHONY: all proto
@@ -12,3 +12,8 @@ proto:
 		--go-grpc_out=$(GEN_PATH) --go-grpc_opt=paths=source_relative \
 		--grpc-gateway_out=$(GEN_PATH) --grpc-gateway_opt=paths=source_relative \
 		./contracts/$(PROTO_SERVICE)/$(PROTO_VERSION)/$(PROTO_SERVICE).proto
+
+
+keys:
+	openssl genrsa -out ${GEN_PATH} 2048
+	openssl rsa -in ${GEN_PATH} -pubout -out ${GEN_PATH}.pub

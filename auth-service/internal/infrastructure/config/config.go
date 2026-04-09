@@ -40,10 +40,11 @@ type Server struct {
 
 type Database struct {
 	Postgres struct {
-		Host   string `yaml:"host" validate:"required,hostname"`
-		Port   string `yaml:"port" validate:"required,gte=1,lte=65535"`
-		DBName string `yaml:"dbname" validate:"required"`
-		Auth   struct {
+		Host    string `yaml:"host" validate:"required,hostname"`
+		Port    int    `yaml:"port" validate:"required,gte=1,lte=65535"`
+		DBName  string `yaml:"dbname" validate:"required"`
+		SSLMode string `yaml:"sslmode" validate:"required,oneof=disable enable"`
+		Auth    struct {
 			User     string `yaml:"user" validate:"required"`
 			Password string `yaml:"password" validate:"required"`
 		} `yaml:"auth"`

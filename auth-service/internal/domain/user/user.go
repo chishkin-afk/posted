@@ -47,6 +47,33 @@ func New(
 	}, nil
 }
 
+func From(
+	id uuid.UUID,
+	email Email,
+	passwordHash PasswordHash,
+	nickname string,
+	createdAt time.Time,
+	updatedAt time.Time,
+) (*User, error) {
+	nickname = strings.TrimSpace(nickname)
+	if len([]rune(nickname)) < 3 || len([]rune(nickname)) > 64 {
+		return nil, errs.ErrInvalidNickname
+	}
+
+	if !email.IsValid() {
+		return nil, errs.ErrInvalidEmail
+	}
+
+	return &User{
+		id:           id,
+		email:        email,
+		passwordHash: passwordHash,
+		nickname:     nickname,
+		createdAt:    createdAt,
+		updatedAt:    updatedAt,
+	}, nil
+}
+
 func (u *User) ChangeEmail(email Email) error {
 	if !email.IsValid() {
 		return errs.ErrInvalidEmail

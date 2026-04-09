@@ -76,7 +76,7 @@ func (h *handlers) Register(ctx context.Context, req *authpb.RegisterRequest) (*
 }
 
 func (h *handlers) UpdateUser(ctx context.Context, req *authpb.UpdateRequest) (*authpb.User, error) {
-	resp, err := h.UpdateUser(ctx, req)
+	resp, err := h.service.UpdateUser(ctx, req)
 	if err != nil {
 		return nil, status.Error(h.getCode(err), err.Error())
 	}
@@ -94,6 +94,8 @@ func (h *handlers) getCode(err error) codes.Code {
 		return codes.NotFound
 	case errors.Is(err, errs.ErrUserAlreadyExists):
 		return codes.AlreadyExists
+	case errors.Is(err, errs.ErrInvalidCredentials):
+		return codes.Unauthenticated
 	}
 
 	return codes.Internal

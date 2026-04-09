@@ -1,5 +1,5 @@
 PROTO_SERVICE ?= unknown
-PROTO_VERSION ?= v1s
+PROTO_VERSION ?= v1
 GEN_PATH ?= ./
 
 .PHONY: all proto

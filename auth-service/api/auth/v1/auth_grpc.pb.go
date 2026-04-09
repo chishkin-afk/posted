@@ -8,7 +8,6 @@ package authpb
 
 import (
 	context "context"
-
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -23,7 +22,6 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	AuthService_Register_FullMethodName    = "/auth.v1.AuthService/Register"
 	AuthService_Login_FullMethodName       = "/auth.v1.AuthService/Login"
-	AuthService_Refresh_FullMethodName     = "/auth.v1.AuthService/Refresh"
 	AuthService_UpdateUser_FullMethodName  = "/auth.v1.AuthService/UpdateUser"
 	AuthService_DeleteUser_FullMethodName  = "/auth.v1.AuthService/DeleteUser"
 	AuthService_GetUserSelf_FullMethodName = "/auth.v1.AuthService/GetUserSelf"
@@ -38,8 +36,6 @@ type AuthServiceClient interface {
 	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*Token, error)
 	// Generate a new pair of tokens
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*Token, error)
-	// Generate a new pair of tokens by refresh
-	Refresh(ctx context.Context, in *RefreshRequest, opts ...grpc.CallOption) (*Token, error)
 	// Update the fields of user
 	// METADATA: authorization
 	UpdateUser(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*User, error)
@@ -75,16 +71,6 @@ func (c *authServiceClient) Login(ctx context.Context, in *LoginRequest, opts ..
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Token)
 	err := c.cc.Invoke(ctx, AuthService_Login_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *authServiceClient) Refresh(ctx context.Context, in *RefreshRequest, opts ...grpc.CallOption) (*Token, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Token)
-	err := c.cc.Invoke(ctx, AuthService_Refresh_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -139,8 +125,6 @@ type AuthServiceServer interface {
 	Register(context.Context, *RegisterRequest) (*Token, error)
 	// Generate a new pair of tokens
 	Login(context.Context, *LoginRequest) (*Token, error)
-	// Generate a new pair of tokens by refresh
-	Refresh(context.Context, *RefreshRequest) (*Token, error)
 	// Update the fields of user
 	// METADATA: authorization
 	UpdateUser(context.Context, *UpdateRequest) (*User, error)
@@ -167,9 +151,6 @@ func (UnimplementedAuthServiceServer) Register(context.Context, *RegisterRequest
 }
 func (UnimplementedAuthServiceServer) Login(context.Context, *LoginRequest) (*Token, error) {
 	return nil, status.Error(codes.Unimplemented, "method Login not implemented")
-}
-func (UnimplementedAuthServiceServer) Refresh(context.Context, *RefreshRequest) (*Token, error) {
-	return nil, status.Error(codes.Unimplemented, "method Refresh not implemented")
 }
 func (UnimplementedAuthServiceServer) UpdateUser(context.Context, *UpdateRequest) (*User, error) {
 	return nil, status.Error(codes.Unimplemented, "method UpdateUser not implemented")
@@ -236,24 +217,6 @@ func _AuthService_Login_Handler(srv interface{}, ctx context.Context, dec func(i
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AuthServiceServer).Login(ctx, req.(*LoginRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AuthService_Refresh_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RefreshRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AuthServiceServer).Refresh(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: AuthService_Refresh_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).Refresh(ctx, req.(*RefreshRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -344,10 +307,6 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Login",
 			Handler:    _AuthService_Login_Handler,
-		},
-		{
-			MethodName: "Refresh",
-			Handler:    _AuthService_Refresh_Handler,
 		},
 		{
 			MethodName: "UpdateUser",

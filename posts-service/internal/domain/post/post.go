@@ -69,6 +69,32 @@ func From(
 	}, nil
 }
 
+func (p *Post) ChangeTitle(title string) error {
+	title = strings.TrimSpace(title)
+	nTitle := len([]rune(title))
+	if nTitle < 3 || nTitle > 64 {
+		return errs.ErrInvalidTitle
+	}
+
+	p.title = title
+	p.updatedAt = time.Now().UTC()
+
+	return nil
+}
+
+func (p *Post) ChangeBody(body string) error {
+	body = strings.TrimSpace(body)
+	nBody := len([]rune(body))
+	if nBody < 3 || nBody > 512 {
+		return errs.ErrInvalidBody
+	}
+
+	p.body = body
+	p.updatedAt = time.Now().UTC()
+
+	return nil
+}
+
 func (p *Post) ID() uuid.UUID {
 	return p.id
 }

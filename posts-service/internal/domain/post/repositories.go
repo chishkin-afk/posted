@@ -13,3 +13,9 @@ type PostPersistenceRepository interface {
 	GetByID(ctx context.Context, id uuid.UUID) (*Post, error)
 	GetSelfPosts(ctx context.Context, userID uuid.UUID, page, limit uint32) ([]*Post, error)
 }
+
+type PostCacheRepository interface {
+	Set(ctx context.Context, post *Post) error
+	Get(ctx context.Context, id uuid.UUID) (*Post, error)
+	Del(ctx context.Context, id uuid.UUID) error
+}

@@ -29,6 +29,7 @@ database:
       max_idle_time: 30m
 
 cache:
+  user-ttl: 5m
   redis: 
     host: ${REDIS_HOST}
     port: ${REDIS_PORT}

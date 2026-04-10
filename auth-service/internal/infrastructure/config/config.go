@@ -58,7 +58,8 @@ type Database struct {
 }
 
 type Cache struct {
-	Redis struct {
+	UserTTL time.Duration `yaml:"user-ttl" validate:"required,min=100ms"`
+	Redis   struct {
 		Host string `yaml:"host" validate:"required,hostname"`
 		Port int    `yaml:"port" validate:"required,gte=1,lte=65535"`
 		DB   int    `yaml:"db"`

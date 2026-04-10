@@ -18,6 +18,7 @@ type authService struct {
 	cfg        *config.Config
 	log        *slog.Logger
 	userRepo   user.UserPersistenceRepository
+	userCache  user.UserCacheRepository
 	jwtManager session.JWTManager
 }
 
@@ -25,12 +26,14 @@ func New(
 	cfg *config.Config,
 	log *slog.Logger,
 	userRepo user.UserPersistenceRepository,
+	userCache user.UserCacheRepository,
 	jwtManager session.JWTManager,
 ) *authService {
 	return &authService{
 		cfg:        cfg,
 		log:        log,
 		userRepo:   userRepo,
+		userCache:  userCache,
 		jwtManager: jwtManager,
 	}
 }
@@ -164,6 +167,7 @@ func (as *authService) UpdateUser(ctx context.Context, req *authpb.UpdateRequest
 		return nil, errs.ErrInternalServer
 	}
 
+	go as.deleteFromCache(context.Background(), updatedUser.ID())
 	return &authpb.User{
 		Id:        updatedUser.ID().String(),
 		Email:     updatedUser.Email().String(),
@@ -196,12 +200,11 @@ func (as *authService) DeleteUser(ctx context.Context) error {
 		return errs.ErrInternalServer
 	}
 
+	go as.deleteFromCache(context.Background(), userID)
 	return nil
 }
 
 func (as *authService) GetUserSelf(ctx context.Context) (*authpb.User, error) {
-	// TODO: add cache
-
 	userID, err := as.getUserID(ctx)
 	if err != nil {
 		return nil, err
@@ -209,6 +212,15 @@ func (as *authService) GetUserSelf(ctx context.Context) (*authpb.User, error) {
 
 	ctxTimeout, cancel := context.WithTimeout(ctx, as.cfg.Server.Timeout)
 	defer cancel()
+
+	if user, err := as.userCache.Get(ctxTimeout, userID); err == nil {
+		return as.returnUser(user), nil
+	} else if !errors.Is(err, errs.ErrUserDoesntExist) {
+		as.log.Error("failed to get user from cache",
+			slog.String("error", err.Error()),
+			slog.String("user_id", userID.String()),
+		)
+	}
 
 	user, err := as.userRepo.GetByID(ctxTimeout, userID)
 	if err != nil {
@@ -225,13 +237,8 @@ func (as *authService) GetUserSelf(ctx context.Context) (*authpb.User, error) {
 		return nil, errs.ErrInternalServer
 	}
 
-	return &authpb.User{
-		Id:        user.ID().String(),
-		Email:     user.Email().String(),
-		Nickname:  user.Nickname(),
-		CreatedAt: timestamppb.New(user.CreatedAt()),
-		UpdatedAt: timestamppb.New(user.UpdatedAt()),
-	}, nil
+	go as.saveUserCache(context.Background(), user)
+	return as.returnUser(user), nil
 }
 
 func (as *authService) GetUserByID(ctx context.Context, req *authpb.GetByIDRequest) (*authpb.User, error) {
@@ -243,6 +250,15 @@ func (as *authService) GetUserByID(ctx context.Context, req *authpb.GetByIDReque
 	ctxTimeout, cancel := context.WithTimeout(ctx, as.cfg.Server.Timeout)
 	defer cancel()
 
+	if user, err := as.userCache.Get(ctxTimeout, userID); err == nil {
+		return as.returnUser(user), nil
+	} else if !errors.Is(err, errs.ErrUserDoesntExist) {
+		as.log.Error("failed to get user from cache",
+			slog.String("error", err.Error()),
+			slog.String("user_id", userID.String()),
+		)
+	}
+
 	user, err := as.userRepo.GetByID(ctxTimeout, userID)
 	if err != nil {
 		if errors.Is(err, context.DeadlineExceeded) ||
@@ -258,13 +274,18 @@ func (as *authService) GetUserByID(ctx context.Context, req *authpb.GetByIDReque
 		return nil, errs.ErrInternalServer
 	}
 
+	go as.saveUserCache(context.Background(), user)
+	return as.returnUser(user), nil
+}
+
+func (as *authService) returnUser(user *user.User) *authpb.User {
 	return &authpb.User{
 		Id:        user.ID().String(),
 		Email:     user.Email().String(),
 		Nickname:  user.Nickname(),
 		CreatedAt: timestamppb.New(user.CreatedAt()),
 		UpdatedAt: timestamppb.New(user.UpdatedAt()),
-	}, nil
+	}
 }
 
 func (as *authService) getUserID(ctx context.Context) (uuid.UUID, error) {
@@ -299,4 +320,28 @@ func (as *authService) applyUpdates(userToUpdate *user.User, req *authpb.UpdateR
 	}
 
 	return nil
+}
+
+func (as *authService) deleteFromCache(ctx context.Context, id uuid.UUID) {
+	ctxTimeout, cancel := context.WithTimeout(ctx, as.cfg.Server.Timeout)
+	defer cancel()
+
+	if err := as.userCache.Del(ctxTimeout, id); err != nil {
+		as.log.Warn("failed to delete user from cache",
+			slog.String("error", err.Error()),
+			slog.String("user_id", id.String()),
+		)
+	}
+}
+
+func (as *authService) saveUserCache(ctx context.Context, user *user.User) {
+	ctxTimeout, cancel := context.WithTimeout(ctx, as.cfg.Server.Timeout)
+	defer cancel()
+
+	if err := as.userCache.Set(ctxTimeout, user); err != nil {
+		as.log.Warn("failed to set user into cache",
+			slog.String("error", err.Error()),
+			slog.String("user_id", user.ID().String()),
+		)
+	}
 }

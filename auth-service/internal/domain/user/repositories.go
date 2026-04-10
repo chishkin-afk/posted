@@ -13,3 +13,9 @@ type UserPersistenceRepository interface {
 	Update(ctx context.Context, user *User) (*User, error)
 	Delete(ctx context.Context, id uuid.UUID) error
 }
+
+type UserCacheRepository interface {
+	Set(ctx context.Context, user *User) error
+	Get(ctx context.Context, id uuid.UUID) (*User, error)
+	Del(ctx context.Context, id uuid.UUID) error
+}

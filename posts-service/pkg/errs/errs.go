@@ -9,4 +9,7 @@ var (
 
 	// Repostiry's
 	ErrPostDoesntExist = errors.New("post doesn't exist")
+
+	// General's
+	ErrInvalidToken = errors.New("invalid token")
 )

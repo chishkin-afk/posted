@@ -96,6 +96,10 @@ func (h *handlers) getCode(err error) codes.Code {
 		return codes.AlreadyExists
 	case errors.Is(err, errs.ErrInvalidCredentials):
 		return codes.Unauthenticated
+	case errors.Is(err, errs.ErrInvalidPassword),
+		errors.Is(err, errs.ErrInvalidEmail),
+		errors.Is(err, errs.ErrInvalidNickname):
+		return codes.InvalidArgument
 	}
 
 	return codes.Internal

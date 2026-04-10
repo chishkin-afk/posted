@@ -94,7 +94,7 @@ func (ppr *postPersistenceRepository) GetSelfPosts(ctx context.Context, userID u
 	offset := limit * (page - 1)
 	var models []PostModel
 	if err := ppr.db.WithContext(ctx).
-		Where("owner_id = ?").
+		Where("owner_id = ?", userID).
 		Offset(int(offset)).
 		Limit(int(limit)).
 		Find(&models).Error; err != nil {

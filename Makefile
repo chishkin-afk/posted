@@ -17,3 +17,11 @@ proto:
 keys:
 	openssl genrsa -out ${GEN_PATH} 2048
 	openssl rsa -in ${GEN_PATH} -pubout -out ${GEN_PATH}.pub
+
+mkcertlocal:
+	mkcert -install
+	mkcert localhost 127.0.0.1
+	mv localhost+1.pem server.crt
+	mv server.crt ${GEN_PATH}
+	mv localhost+1-key.pem server.key
+	mv server.key ${GEN_PATH}

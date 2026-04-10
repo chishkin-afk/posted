@@ -5,4 +5,6 @@
 *.key
 *.key.pub
 
+certs/
+
 TODO.md

@@ -1,0 +1,41 @@
+app:
+  name: posted-posts-service
+  version: 0.0.1
+  env: ${APP_ENV}
+
+server:
+  grpc:
+    addr: ${GRPC_ADDR}
+    mtls:
+      enable: false
+      server_cert_path: ./certs/server.crt
+      server_key_path: ./certs/server.key
+      root_ca_path: ./certs/rootCA.pem
+  timeout: 2s
+
+database:
+  postgres:
+    host: ${POSTGRES_HOST}
+    port: ${POSTGRES_PORT}
+    dbname: ${POSTGRES_DBNAME}
+    sslmode: disable
+    auth:
+      user: ${POSTGRES_USER}
+      password: ${POSTGRES_PASSWORD}
+    conn:
+      max_opens: 5
+      max_idles: 15
+      max_lifetime: 15m
+      max_idle_time: 30m
+
+cache:
+  redis: 
+    host: ${REDIS_HOST}
+    port: ${REDIS_PORT}
+    db: 0
+    auth:
+      username: ${REDIS_USERNAME}
+      password: ${REDIS_PASSWORD}
+
+session:
+  public_key_path: ./jwtRS256.key.pub

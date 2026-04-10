@@ -258,8 +258,9 @@ func (x *Updates) GetBody() string {
 
 type UpdateRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Updates       *Updates               `protobuf:"bytes,1,opt,name=updates,proto3" json:"updates,omitempty"`
-	UpdateMask    []string               `protobuf:"bytes,2,rep,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
+	PostId        string                 `protobuf:"bytes,1,opt,name=post_id,json=postId,proto3" json:"post_id,omitempty"`
+	Updates       *Updates               `protobuf:"bytes,2,opt,name=updates,proto3" json:"updates,omitempty"`
+	UpdateMask    []string               `protobuf:"bytes,3,rep,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -292,6 +293,13 @@ func (x *UpdateRequest) ProtoReflect() protoreflect.Message {
 // Deprecated: Use UpdateRequest.ProtoReflect.Descriptor instead.
 func (*UpdateRequest) Descriptor() ([]byte, []int) {
 	return file_posts_v1_posts_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *UpdateRequest) GetPostId() string {
+	if x != nil {
+		return x.PostId
+	}
+	return ""
 }
 
 func (x *UpdateRequest) GetUpdates() *Updates {
@@ -471,10 +479,11 @@ const file_posts_v1_posts_proto_rawDesc = "" +
 	"\aUpdates\x12\"\n" +
 	"\x05title\x18\x01 \x01(\tB\f\xbaH\t\xc8\x01\x01r\x04\x10\x03\x18@R\x05title\x12!\n" +
 	"\x04body\x18\x02 \x01(\tB\r\xbaH\n" +
-	"\xc8\x01\x01r\x05\x10\x03\x18\x80\x04R\x04body\"r\n" +
-	"\rUpdateRequest\x123\n" +
-	"\aupdates\x18\x01 \x01(\v2\x11.posts.v1.UpdatesB\x06\xbaH\x03\xc8\x01\x01R\aupdates\x12,\n" +
-	"\vupdate_mask\x18\x02 \x03(\tB\v\xbaH\b\xc8\x01\x01\x92\x01\x02\b\x01R\n" +
+	"\xc8\x01\x01r\x05\x10\x03\x18\x80\x04R\x04body\"\x98\x01\n" +
+	"\rUpdateRequest\x12$\n" +
+	"\apost_id\x18\x01 \x01(\tB\v\xbaH\b\xc8\x01\x01r\x03\xb0\x01\x01R\x06postId\x123\n" +
+	"\aupdates\x18\x02 \x01(\v2\x11.posts.v1.UpdatesB\x06\xbaH\x03\xc8\x01\x01R\aupdates\x12,\n" +
+	"\vupdate_mask\x18\x03 \x03(\tB\v\xbaH\b\xc8\x01\x01\x92\x01\x02\b\x01R\n" +
 	"updateMask\"5\n" +
 	"\rDeleteRequest\x12$\n" +
 	"\apost_id\x18\x01 \x01(\tB\v\xbaH\b\xc8\x01\x01r\x03\xb0\x01\x01R\x06postId\"6\n" +

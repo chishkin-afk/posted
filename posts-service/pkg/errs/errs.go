@@ -11,5 +11,10 @@ var (
 	ErrPostDoesntExist = errors.New("post doesn't exist")
 
 	// General's
-	ErrInvalidToken = errors.New("invalid token")
+	ErrInvalidToken    = errors.New("invalid token")
+	ErrInternalServer  = errors.New("internal server error")
+	ErrInvalidPostID   = errors.New("invalid post's id")
+	ErrTooLargeUpdates = errors.New("too large updates")
+	ErrNoEnoughRights  = errors.New("no enough rights")
+	ErrInvalidSize     = errors.New("size must be less than 100")
 )

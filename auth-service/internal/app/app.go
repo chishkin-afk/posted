@@ -23,7 +23,12 @@ import (
 	"github.com/redis/go-redis/v9"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
+
 	"gorm.io/gorm"
+
+	"buf.build/go/protovalidate"
+
+	protovalidate_middleware "github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/protovalidate"
 )
 
 type App struct {
@@ -103,6 +108,12 @@ func provideServer(cfg *config.Config, log *slog.Logger, db *gorm.DB, redisClien
 	)
 
 	handler := handlers.New(service)
+
+	validator, err := protovalidate.New()
+	if err != nil {
+		return nil, err
+	}
+
 	opts := []grpc.ServerOption{
 		grpc.ChainUnaryInterceptor(
 			interceptors.NewAuthInterceptor(jm, map[string]bool{
@@ -110,6 +121,7 @@ func provideServer(cfg *config.Config, log *slog.Logger, db *gorm.DB, redisClien
 				authpb.AuthService_GetUserSelf_FullMethodName: true,
 				authpb.AuthService_UpdateUser_FullMethodName:  true,
 			}),
+			protovalidate_middleware.UnaryServerInterceptor(validator),
 		),
 	}
 	if cfg.Server.GRPC.MTLS.Enable {

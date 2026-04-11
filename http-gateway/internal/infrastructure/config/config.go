@@ -37,14 +37,15 @@ type Server struct {
 	IdleTimeout  time.Duration `yaml:"idle_timeout" validate:"required,min=100ms"`
 }
 
+type MTLS struct {
+	Enable         bool   `yaml:"enable"`
+	ClientCertPath string `yaml:"client_cert_path"`
+	ClientKeyPath  string `yaml:"client_key_path"`
+}
+
 type ExternalServer struct {
 	Addr string `yaml:"addr" validate:"required,hostname_port"`
-	MTLS struct {
-		Enable         bool   `yaml:"enable"`
-		ServerCertPath string `yaml:"server_cert_path"`
-		ServerKeyPath  string `yaml:"server_key_path"`
-		RootCAPath     string `yaml:"root_ca_path"`
-	} `yaml:"mtls"`
+	MTLS MTLS   `yaml:"mtls"`
 }
 
 type GRPC struct {

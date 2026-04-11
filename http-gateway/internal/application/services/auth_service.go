@@ -7,7 +7,6 @@ import (
 	authpb "github.com/chishkin-afk/posted/http-gateway/api/auth/v1"
 	"github.com/chishkin-afk/posted/http-gateway/internal/application/dtos"
 	"github.com/chishkin-afk/posted/http-gateway/internal/infrastructure/config"
-	"github.com/go-playground/validator/v10"
 	"google.golang.org/grpc/metadata"
 )
 
@@ -15,7 +14,6 @@ type authService struct {
 	cfg        *config.Config
 	log        *slog.Logger
 	authClient authpb.AuthServiceClient
-	validate   *validator.Validate
 }
 
 func NewAuthService(
@@ -27,15 +25,10 @@ func NewAuthService(
 		cfg:        cfg,
 		log:        log,
 		authClient: authClient,
-		validate:   validator.New(),
 	}
 }
 
 func (as *authService) Register(ctx context.Context, req *dtos.RegisterRequest) (*dtos.Token, error) {
-	if err := as.validate.Struct(req); err != nil {
-		return nil, err
-	}
-
 	resp, err := as.authClient.Register(ctx, &authpb.RegisterRequest{
 		Email:    req.Email,
 		Password: req.Password,
@@ -55,10 +48,6 @@ func (as *authService) Register(ctx context.Context, req *dtos.RegisterRequest) 
 }
 
 func (as *authService) Login(ctx context.Context, req *dtos.LoginRequest) (*dtos.Token, error) {
-	if err := as.validate.Struct(req); err != nil {
-		return nil, err
-	}
-
 	resp, err := as.authClient.Login(ctx, &authpb.LoginRequest{
 		Email:    req.Email,
 		Password: req.Password,

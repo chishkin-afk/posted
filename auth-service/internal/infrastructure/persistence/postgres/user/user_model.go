@@ -8,7 +8,7 @@ import (
 
 type UserModel struct {
 	ID           uuid.UUID `gorm:"primarykey"`
-	Email        string    `gorm:"not null;indexUnique"`
+	Email        string    `gorm:"not null;uniqueIndex"`
 	PasswordHash string    `gorm:"not null"`
 	Nickname     string    `gorm:"not null"`
 	CreatedAt    time.Time `gorm:"not null"`

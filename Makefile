@@ -25,3 +25,6 @@ mkcertlocal:
 	mv server.crt ${GEN_PATH}
 	mv localhost+1-key.pem server.key
 	mv server.key ${GEN_PATH}
+
+mkcertclient:
+	mkcert -client -cert-file $(GEN_PATH)/client.crt -key-file $(GEN_PATH)/client.key client

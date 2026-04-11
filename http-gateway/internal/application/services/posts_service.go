@@ -7,7 +7,6 @@ import (
 	postspb "github.com/chishkin-afk/posted/http-gateway/api/posts/v1"
 	"github.com/chishkin-afk/posted/http-gateway/internal/application/dtos"
 	"github.com/chishkin-afk/posted/http-gateway/internal/infrastructure/config"
-	"github.com/go-playground/validator/v10"
 	"google.golang.org/grpc/metadata"
 )
 
@@ -15,7 +14,6 @@ type postsService struct {
 	cfg         *config.Config
 	log         *slog.Logger
 	postsClient postspb.PostsServiceClient
-	validate    *validator.Validate
 }
 
 func NewPostsService(
@@ -27,15 +25,10 @@ func NewPostsService(
 		cfg:         cfg,
 		log:         log,
 		postsClient: postsClient,
-		validate:    validator.New(),
 	}
 }
 
 func (ps *postsService) Create(ctx context.Context, req *dtos.CreatePostRequest, token string) (*dtos.Post, error) {
-	if err := ps.validate.Struct(req); err != nil {
-		return nil, err
-	}
-
 	ctx = ps.ctxWithMD(ctx, token)
 
 	resp, err := ps.postsClient.Create(ctx, &postspb.CreateRequest{
@@ -60,10 +53,6 @@ func (ps *postsService) Create(ctx context.Context, req *dtos.CreatePostRequest,
 }
 
 func (ps *postsService) Update(ctx context.Context, req *dtos.UpdatePostRequest, token string) (*dtos.Post, error) {
-	if err := ps.validate.Struct(req); err != nil {
-		return nil, err
-	}
-
 	ctx = ps.ctxWithMD(ctx, token)
 
 	resp, err := ps.postsClient.Update(ctx, &postspb.UpdateRequest{

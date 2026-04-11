@@ -25,3 +25,7 @@ type Post struct {
 type Posts struct {
 	Posts []Post `json:"posts"`
 }
+
+type ErrMsg struct {
+	Error string `json:"error"`
+}

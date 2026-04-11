@@ -127,7 +127,7 @@ func (ps *postsService) GetByID(ctx context.Context, id string) (*dtos.Post, err
 	}, nil
 }
 
-func (ps *postsService) GetSelfPosts(ctx context.Context, token string, page, limit uint32) (*dtos.Posts, error) {
+func (ps *postsService) GetSelfPosts(ctx context.Context, page, limit uint32, token string) (*dtos.Posts, error) {
 	ctx = ps.ctxWithMD(ctx, token)
 
 	resp, err := ps.postsClient.GetSelfPosts(ctx, &postspb.GetPostsRequest{

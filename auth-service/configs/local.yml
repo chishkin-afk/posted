@@ -5,9 +5,9 @@ app:
 
 server:
   grpc:
-    addr: ${GRPC_ADDR}
+    addr: 0.0.0.0:50050
     mtls:
-      enable: true
+      enable: false
       server_cert_path: ./certs/server.crt
       server_key_path: ./certs/server.key
       root_ca_path: ./certs/rootCA.pem
@@ -40,5 +40,5 @@ cache:
 
 session:
   access_ttl: 168h
-  public_key_path: ./jwtRS256.key.pub
-  private_key_path: ./jwtRS256.key
+  public_key_path: ./keys/jwtRS256.key.pub
+  private_key_path: ./keys/jwtRS256.key

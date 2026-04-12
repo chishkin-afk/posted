@@ -1,0 +1,89 @@
+services:
+  postgres:
+    image: postgres
+    container_name: posted-postgres
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DBNAME}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DBNAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  redis:
+    image: redis
+    container_name: posted-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  auth_service:
+    build:
+      context: ./auth-service
+      dockerfile: Dockerfile
+    container_name: auth-service
+    env_file:
+      - .env
+    ports:
+      - "50050:50050"
+    volumes:
+      - ./certs:/certs:ro
+      - ./keys:/keys:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  posts_service:
+    build:
+      context: ./posts-service
+      dockerfile: Dockerfile
+    container_name: posts-service
+    env_file:
+      - .env
+    ports:
+      - "50051:50051"
+    volumes:
+      - ./certs:/certs:ro
+      - ./keys:/keys:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  http_gateway:
+    build:
+      context: ./http-gateway
+      dockerfile: Dockerfile
+    container_name: http-gateway
+    env_file:
+      - .env
+    ports:
+      - "8090:8090"
+    volumes:
+      - ./certs:/certs:ro
+    depends_on:
+      auth_service:
+        condition: service_started
+      posts_service:
+        condition: service_started
+
+volumes:
+  postgres_data:
+  redis_data:

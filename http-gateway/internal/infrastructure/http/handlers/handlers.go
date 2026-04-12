@@ -341,6 +341,10 @@ func (h *handlers) getCode(err error) (int, *dtos.ErrMsg) {
 		return http.StatusNotFound, &dtos.ErrMsg{
 			Error: st.Message(),
 		}
+	case codes.Unauthenticated:
+		return http.StatusUnauthorized, &dtos.ErrMsg{
+			Error: st.Message(),
+		}
 	}
 
 	return http.StatusInternalServerError, &dtos.ErrMsg{

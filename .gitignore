@@ -6,5 +6,6 @@
 *.key.pub
 
 certs/
+keys/
 
 TODO.md

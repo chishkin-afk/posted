@@ -2,7 +2,7 @@ PROTO_SERVICE ?= unknown
 PROTO_VERSION ?= v1
 GEN_PATH ?= ./
 
-.PHONY: all proto
+.PHONY: all proto mkcertlocal mkcertclient keys
 all: proto
 
 proto:
@@ -18,9 +18,11 @@ keys:
 	openssl genrsa -out ${GEN_PATH} 2048
 	openssl rsa -in ${GEN_PATH} -pubout -out ${GEN_PATH}.pub
 
+CERT_HOST ?= 127.0.0.1
+
 mkcertlocal:
 	mkcert -install
-	mkcert localhost 127.0.0.1
+	mkcert localhost $(CERT_HOST)
 	mv localhost+1.pem server.crt
 	mv server.crt ${GEN_PATH}
 	mv localhost+1-key.pem server.key
@@ -28,3 +30,18 @@ mkcertlocal:
 
 mkcertclient:
 	mkcert -client -cert-file $(GEN_PATH)/client.crt -key-file $(GEN_PATH)/client.key client
+
+quick:
+	echo "generating jwt keys..."
+	mkdir -p keys/
+	make keys GEN_PATH=./keys/jwtRS256.key
+
+	echo "generating certificates & keys..."
+	mkdir -p certs/
+	make mkcertlocal GEN_PATH=./certs CERT_HOST=0.0.0.0
+	make mkcertclient GEN_PATH=./certs
+
+	echo "set environment variables..."
+	cp .env.example .env
+
+	cp "$$(mkcert -CAROOT | grep -o '/.*')/rootCA.pem" certs/rootCA.pem

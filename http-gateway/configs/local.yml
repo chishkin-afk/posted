@@ -5,9 +5,9 @@ app:
 
 server:
   http:
-    addr: localhost:8090
+    addr: 0.0.0.0:8090
     tls:
-      enable: false
+      enable: true
       server_cert_path: ./certs/server.crt
       server_key_path: ./certs/server.key
   read_timeout: 2s
@@ -16,14 +16,14 @@ server:
 
 grpc:
   auth_service:
-    addr: ${AUTH_GRPC_ADDR}
+    addr: auth-service:50050
     mtls:
-      enable: true
+      enable: false
       client_cert_path: ./certs/client.crt
       client_key_path: ./certs/client.key
   posts_service:
-    addr: ${POSTS_GRPC_ADDR}
+    addr: posts-service:50051
     mtls:
-      enable: true
+      enable: false
       client_cert_path: ./certs/client.crt
       client_key_path: ./certs/client.key

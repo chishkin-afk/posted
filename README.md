@@ -1,12 +1,12 @@
-# Posted
+# 🚀 Posted
 
 A scalable microservices platform for user authentication and content management, built with Go, gRPC, and modern cloud-native practices.
 
-## About
+## ℹ️ About
 
 **Posted** is a backend system designed to handle user registration, authentication, session management, and blog post operations. It follows a clean architecture pattern, separating concerns into domain, application, and infrastructure layers. The system ensures high security through mTLS communication between services, JWT-based stateless authentication, and strict input validation using `protovalidate`.
 
-## Features
+## ✨ Features
 
 - **Microservices Architecture**: Decoupled services for Authentication (`auth-service`) and Posts Management (`posts-service`).
 - **API Gateway**: A dedicated `http-gateway` exposes RESTful endpoints to the client, handling HTTP-to-gRPC translation.
@@ -21,7 +21,7 @@ A scalable microservices platform for user authentication and content management
 - **Documentation**: Auto-generated Swagger (OpenAPI) documentation available via the gateway.
 - **Containerization**: Full Docker Compose setup for easy local development and deployment.
 
-### Service Breakdown
+### 🔍 Service Breakdown
 
 1.  **Auth Service** (`auth-service`)
     *   Handles user registration, login, profile updates, and deletion.
@@ -40,7 +40,7 @@ A scalable microservices platform for user authentication and content management
     *   Provides Swagger UI for API exploration.
     *   Handles cross-cutting concerns like initial request logging.
 
-## Tech Stack
+## 🛠 Tech Stack
 
 -   **Language**: Go 1.25+
 -   **Communication**: gRPC, Protobuf
@@ -52,16 +52,16 @@ A scalable microservices platform for user authentication and content management
 -   **Infrastructure**: Docker, Docker Compose
 -   **Docs**: Swaggo
 
-## Getting Started
+## 🏁 Getting Started
 
-### Prerequisites
+### 📋 Prerequisites
 
 -   Go 1.25+
 -   Docker & Docker Compose
 -   Make (optional, for convenience commands)
 -   `mkcert` (for generating local SSL certificates)
 
-### Quick Start
+### ⚡ Quick Start
 
 1.  **Clone the repository**:
     ```bash
@@ -82,15 +82,14 @@ A scalable microservices platform for user authentication and content management
     http://localhost:8090/swagger/index.html
     ```
 
-### Configuration
+### ⚙️ Configuration
 
 Edit the `.env` file to configure database credentials, ports, and feature flags.
 
 -   `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DBNAME`: Database credentials.
 -   `APP_CONFIG_PATH`: Path to the specific YAML config for each service.
--   `SERVER_GRPC_MTLS_ENABLE`: Toggle mTLS (true/false).
 
-## Project Structure
+## 📂 Project Structure
 
 ```
 .
@@ -104,24 +103,25 @@ Edit the `.env` file to configure database credentials, ports, and feature flags
 └── Makefile               # Build automation
 ```
 
-## API Endpoints (via Gateway)
+## 🔌 API Endpoints (via Gateway)
 
-### Authentication
+### 🔐 Authentication
 -   `POST /api/v1/register` - Register a new user.
 -   `POST /api/v1/login` - Login and receive tokens.
--   `GET /api/v1/user` - Get current user profile (Protected).
--   `PATCH /api/v1/user` - Update user profile (Protected).
--   `DELETE /api/v1/user` - Delete account (Protected).
+-   `GET /api/v1/user` - Get current user profile.
+-   `GET /api/v1/user/:id` - Get user profile by id.
+-   `PATCH /api/v1/user` - Update user profile.
+-   `DELETE /api/v1/user` - Delete account.
 
-### Posts
--   `POST /api/v1/post` - Create a new post (Protected).
--   `PATCH /api/v1/posts/:id` - Update a post (Protected).
+### 📝 Posts
+-   `POST /api/v1/post` - Create a new post.
+-   `PATCH /api/v1/post` - Update a post.
 -   `GET /api/v1/post/:id` - Get a specific post.
--   `GET /api/v1/posts` - Get current user's posts (Protected).
--   `DELETE /api/v1/post/:id` - Delete a post (Protected).
+-   `GET /api/v1/posts` - Get current user's posts.
+-   `DELETE /api/v1/post/:id` - Delete a post.
 
 *Protected endpoints require an `Authorization: <token>` header.*
 
-## License
+## 📄 License
 
 MIT License - see [LICENSE](LICENSE) for details.

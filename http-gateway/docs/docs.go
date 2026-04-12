@@ -728,7 +728,7 @@ const docTemplate = `{
         }
     },
     "securityDefinitions": {
-        "BearerAuth": {
+        "JWTAuth": {
             "description": "Type JWT token.",
             "type": "apiKey",
             "name": "Authorization",

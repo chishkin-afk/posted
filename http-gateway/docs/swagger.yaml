@@ -480,7 +480,7 @@ paths:
       tags:
       - Users
 securityDefinitions:
-  BearerAuth:
+  JWTAuth:
     description: Type JWT token.
     in: header
     name: Authorization

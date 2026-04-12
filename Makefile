@@ -36,12 +36,7 @@ quick:
 	mkdir -p keys/
 	make keys GEN_PATH=./keys/jwtRS256.key
 
-	echo "generating certificates & keys..."
-	mkdir -p certs/
-	make mkcertlocal GEN_PATH=./certs CERT_HOST=0.0.0.0
-	make mkcertclient GEN_PATH=./certs
-
 	echo "set environment variables..."
 	cp .env.example .env
 
-	cp "$$(mkcert -CAROOT | grep -o '/.*')/rootCA.pem" certs/rootCA.pem
+	docker-compose up -d

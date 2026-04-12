@@ -10,8 +10,25 @@ import (
 	"syscall"
 	"time"
 
+	_ "github.com/chishkin-afk/posted/http-gateway/docs"
 	"github.com/chishkin-afk/posted/http-gateway/internal/app"
 )
+
+// @title Posted HTTP Gateway API
+// @version 1.0.0
+// @description API gateway for authentication and posts management services.
+// @termsOfService http://swagger.io/terms/
+
+// @license.name MIT
+// @license.url https://opensource.org/licenses/MIT
+
+// @host localhost:8080
+// @BasePath /api/v1
+
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @description Type JWT token.
 
 func main() {
 	app, cleanup, err := app.New()

@@ -34,6 +34,17 @@ type handlers struct {
 	postsService postsService
 }
 
+// Register godoc
+// @Summary Register a new user
+// @Description Register a new user with email, password and nickname
+// @Tags Authentication
+// @Accept json
+// @Produce json
+// @Param request body dtos.RegisterRequest true "Register credentials"
+// @Success 201 {object} dtos.Token
+// @Failure 400 {object} dtos.ErrMsg
+// @Failure 409 {object} dtos.ErrMsg
+// @Router /register [post]
 func (h *handlers) Register() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var req dtos.RegisterRequest
@@ -55,6 +66,17 @@ func (h *handlers) Register() gin.HandlerFunc {
 	}
 }
 
+// Login godoc
+// @Summary Login user
+// @Description Authenticate user and receive access token
+// @Tags Authentication
+// @Accept json
+// @Produce json
+// @Param request body dtos.LoginRequest true "Login credentials"
+// @Success 200 {object} dtos.Token
+// @Failure 400 {object} dtos.ErrMsg
+// @Failure 401 {object} dtos.ErrMsg
+// @Router /login [post]
 func (h *handlers) Login() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var req dtos.LoginRequest
@@ -76,6 +98,18 @@ func (h *handlers) Login() gin.HandlerFunc {
 	}
 }
 
+// UpdateUser godoc
+// @Summary Update current user profile
+// @Description Update user information (email, nickname)
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param request body dtos.UpdateUserRequest true "Update data"
+// @Success 200 {object} dtos.User
+// @Failure 400 {object} dtos.ErrMsg
+// @Failure 401 {object} dtos.ErrMsg
+// @Router /user [patch]
 func (h *handlers) UpdateUser() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		token, err := h.getToken(ctx)
@@ -105,6 +139,15 @@ func (h *handlers) UpdateUser() gin.HandlerFunc {
 	}
 }
 
+// DeleteUser godoc
+// @Summary Delete current user account
+// @Description Permanently delete the current user's account
+// @Tags Users
+// @Produce json
+// @Security BearerAuth
+// @Success 204 "No Content"
+// @Failure 401 {object} dtos.ErrMsg
+// @Router /user [delete]
 func (h *handlers) DeleteUser() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		token, err := h.getToken(ctx)
@@ -125,6 +168,15 @@ func (h *handlers) DeleteUser() gin.HandlerFunc {
 	}
 }
 
+// GetUserSelf godoc
+// @Summary Get current user profile
+// @Description Retrieve details of the currently authenticated user
+// @Tags Users
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} dtos.User
+// @Failure 401 {object} dtos.ErrMsg
+// @Router /user [get]
 func (h *handlers) GetUserSelf() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		token, err := h.getToken(ctx)
@@ -146,6 +198,16 @@ func (h *handlers) GetUserSelf() gin.HandlerFunc {
 	}
 }
 
+// GetUserByID godoc
+// @Summary Get user by ID
+// @Description Retrieve public profile of a user by their ID
+// @Tags Users
+// @Produce json
+// @Param id path string true "User ID"
+// @Success 200 {object} dtos.User
+// @Failure 400 {object} dtos.ErrMsg
+// @Failure 404 {object} dtos.ErrMsg
+// @Router /user/{id} [get]
 func (h *handlers) GetUserByID() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")
@@ -167,6 +229,18 @@ func (h *handlers) GetUserByID() gin.HandlerFunc {
 	}
 }
 
+// CreatePost godoc
+// @Summary Create a new post
+// @Description Create a new post with title and body
+// @Tags Posts
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param request body dtos.CreatePostRequest true "Post data"
+// @Success 200 {object} dtos.Post
+// @Failure 400 {object} dtos.ErrMsg
+// @Failure 401 {object} dtos.ErrMsg
+// @Router /post [post]
 func (h *handlers) CreatePost() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		token, err := h.getToken(ctx)
@@ -196,6 +270,19 @@ func (h *handlers) CreatePost() gin.HandlerFunc {
 	}
 }
 
+// UpdatePost godoc
+// @Summary Update an existing post
+// @Description Update title or body of an existing post
+// @Tags Posts
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param request body dtos.UpdatePostRequest true "Update data"
+// @Success 200 {object} dtos.Post
+// @Failure 400 {object} dtos.ErrMsg
+// @Failure 401 {object} dtos.ErrMsg
+// @Failure 404 {object} dtos.ErrMsg
+// @Router /post [patch]
 func (h *handlers) UpdatePost() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		token, err := h.getToken(ctx)
@@ -225,6 +312,18 @@ func (h *handlers) UpdatePost() gin.HandlerFunc {
 	}
 }
 
+// DeletePost godoc
+// @Summary Delete post by ID
+// @Description Permanently delete a post by its ID
+// @Tags Posts
+// @Produce json
+// @Security BearerAuth
+// @Param id path string true "Post ID"
+// @Success 204 "No Content"
+// @Failure 400 {object} dtos.ErrMsg
+// @Failure 401 {object} dtos.ErrMsg
+// @Failure 404 {object} dtos.ErrMsg
+// @Router /post/{id} [delete]
 func (h *handlers) DeletePost() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		token, err := h.getToken(ctx)
@@ -253,6 +352,16 @@ func (h *handlers) DeletePost() gin.HandlerFunc {
 	}
 }
 
+// GetPostByID godoc
+// @Summary Get post by ID
+// @Description Retrieve a single post by its ID
+// @Tags Posts
+// @Produce json
+// @Param id path string true "Post ID"
+// @Success 200 {object} dtos.Post
+// @Failure 400 {object} dtos.ErrMsg
+// @Failure 404 {object} dtos.ErrMsg
+// @Router /post/{id} [get]
 func (h *handlers) GetPostByID() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")
@@ -274,6 +383,18 @@ func (h *handlers) GetPostByID() gin.HandlerFunc {
 	}
 }
 
+// GetSelfPosts godoc
+// @Summary Get current user's posts with pagination
+// @Description Retrieve a list of posts created by the current user
+// @Tags Posts
+// @Produce json
+// @Security BearerAuth
+// @Param page query int true "Page number (starts from 1)" minimum(1)
+// @Param size query int true "Number of items per page" minimum(1) maximum(100)
+// @Success 200 {object} dtos.Posts
+// @Failure 400 {object} dtos.ErrMsg
+// @Failure 401 {object} dtos.ErrMsg
+// @Router /posts [get]
 func (h *handlers) GetSelfPosts() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		token, err := h.getToken(ctx)

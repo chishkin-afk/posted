@@ -10,6 +10,7 @@ RUN go build -o httpgateway ./cmd/main.go
 FROM alpine:latest
 
 COPY --from=builder app/configs ./configs/
+COPY --from=builder app/docs ./docs/
 COPY --from=builder app/httpgateway ./
 
 CMD ["./httpgateway"]

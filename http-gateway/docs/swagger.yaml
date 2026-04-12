@@ -1,0 +1,488 @@
+basePath: /api/v1
+definitions:
+  dtos.CreatePostRequest:
+    description: CreatePostRequest represents the payload for creating a new post.
+    properties:
+      body:
+        example: Content of the post goes here.
+        type: string
+      title:
+        example: My First Post
+        type: string
+    required:
+    - body
+    - title
+    type: object
+  dtos.ErrMsg:
+    description: ErrMsg represents an error response.
+    properties:
+      error:
+        example: invalid request
+        type: string
+    type: object
+  dtos.LoginRequest:
+    description: LoginRequest represents the payload for user login.
+    properties:
+      email:
+        example: user@example.com
+        type: string
+      password:
+        example: strongpassword123
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  dtos.Post:
+    description: Post represents a single post entity.
+    properties:
+      body:
+        example: Content of the post goes here.
+        type: string
+      id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      owner_id:
+        example: 550e8400-e29b-41d4-a716-446655440001
+        type: string
+      posted_at:
+        example: 1678886400
+        type: integer
+      title:
+        example: My First Post
+        type: string
+      updated_at:
+        example: 1678886400
+        type: integer
+    type: object
+  dtos.Posts:
+    description: Posts represents a list of posts.
+    properties:
+      posts:
+        items:
+          $ref: '#/definitions/dtos.Post'
+        type: array
+    type: object
+  dtos.RegisterRequest:
+    description: RegisterRequest represents the payload for user registration.
+    properties:
+      email:
+        example: user@example.com
+        type: string
+      nickname:
+        example: john_doe
+        type: string
+      password:
+        example: strongpassword123
+        type: string
+    required:
+    - email
+    - nickname
+    - password
+    type: object
+  dtos.Token:
+    description: Token represents the authentication token response.
+    properties:
+      access:
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        type: string
+      access_ttl:
+        example: 3600
+        type: integer
+    type: object
+  dtos.UpdatePostRequest:
+    description: UpdatePostRequest represents the payload for updating an existing
+      post.
+    properties:
+      post_id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      update_mask:
+        example:
+        - '["title"]'
+        items:
+          type: string
+        type: array
+      updates:
+        properties:
+          body:
+            example: Updated content.
+            type: string
+          title:
+            example: Updated Title
+            type: string
+        type: object
+    required:
+    - post_id
+    type: object
+  dtos.UpdateUserRequest:
+    description: UpdateUserRequest represents the payload for updating user profile.
+    properties:
+      update_mask:
+        example:
+        - '["email"'
+        - '"nickname"]'
+        items:
+          type: string
+        type: array
+      updates:
+        properties:
+          email:
+            example: newemail@example.com
+            type: string
+          nickname:
+            example: new_nickname
+            type: string
+        type: object
+    type: object
+  dtos.User:
+    description: User represents the user profile data.
+    properties:
+      created_at:
+        example: 1678886400
+        type: integer
+      email:
+        example: user@example.com
+        type: string
+      id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      nickname:
+        example: john_doe
+        type: string
+      updated_at:
+        example: 1678886400
+        type: integer
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API gateway for authentication and posts management services.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: http://swagger.io/terms/
+  title: Posted HTTP Gateway API
+  version: 1.0.0
+paths:
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate user and receive access token
+      parameters:
+      - description: Login credentials
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.Token'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dtos.ErrMsg'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dtos.ErrMsg'
+      summary: Login user
+      tags:
+      - Authentication
+  /post:
+    patch:
+      consumes:
+      - application/json
+      description: Update title or body of an existing post
+      parameters:
+      - description: Update data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.UpdatePostRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.Post'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dtos.ErrMsg'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dtos.ErrMsg'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dtos.ErrMsg'
+      security:
+      - BearerAuth: []
+      summary: Update an existing post
+      tags:
+      - Posts
+    post:
+      consumes:
+      - application/json
+      description: Create a new post with title and body
+      parameters:
+      - description: Post data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.CreatePostRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.Post'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dtos.ErrMsg'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dtos.ErrMsg'
+      security:
+      - BearerAuth: []
+      summary: Create a new post
+      tags:
+      - Posts
+  /post/{id}:
+    delete:
+      description: Permanently delete a post by its ID
+      parameters:
+      - description: Post ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dtos.ErrMsg'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dtos.ErrMsg'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dtos.ErrMsg'
+      security:
+      - BearerAuth: []
+      summary: Delete post by ID
+      tags:
+      - Posts
+    get:
+      description: Retrieve a single post by its ID
+      parameters:
+      - description: Post ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.Post'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dtos.ErrMsg'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dtos.ErrMsg'
+      summary: Get post by ID
+      tags:
+      - Posts
+  /posts:
+    get:
+      description: Retrieve a list of posts created by the current user
+      parameters:
+      - description: Page number (starts from 1)
+        in: query
+        minimum: 1
+        name: page
+        required: true
+        type: integer
+      - description: Number of items per page
+        in: query
+        maximum: 100
+        minimum: 1
+        name: size
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.Posts'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dtos.ErrMsg'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dtos.ErrMsg'
+      security:
+      - BearerAuth: []
+      summary: Get current user's posts with pagination
+      tags:
+      - Posts
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user with email, password and nickname
+      parameters:
+      - description: Register credentials
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dtos.Token'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dtos.ErrMsg'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/dtos.ErrMsg'
+      summary: Register a new user
+      tags:
+      - Authentication
+  /user:
+    delete:
+      description: Permanently delete the current user's account
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dtos.ErrMsg'
+      security:
+      - BearerAuth: []
+      summary: Delete current user account
+      tags:
+      - Users
+    get:
+      description: Retrieve details of the currently authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.User'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dtos.ErrMsg'
+      security:
+      - BearerAuth: []
+      summary: Get current user profile
+      tags:
+      - Users
+    patch:
+      consumes:
+      - application/json
+      description: Update user information (email, nickname)
+      parameters:
+      - description: Update data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.UpdateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dtos.ErrMsg'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dtos.ErrMsg'
+      security:
+      - BearerAuth: []
+      summary: Update current user profile
+      tags:
+      - Users
+  /user/{id}:
+    get:
+      description: Retrieve public profile of a user by their ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dtos.ErrMsg'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dtos.ErrMsg'
+      summary: Get user by ID
+      tags:
+      - Users
+securityDefinitions:
+  BearerAuth:
+    description: Type JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

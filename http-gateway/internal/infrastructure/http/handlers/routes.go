@@ -3,6 +3,8 @@ package handlers
 import (
 	"github.com/chishkin-afk/posted/http-gateway/pkg/errs"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 const (
@@ -11,6 +13,14 @@ const (
 	ModeLocal = "local"
 )
 
+// @title Posted HTTP Gateway API
+// @version 1.0.0
+// @description API gateway for authentication and posts management services.
+// @host localhost:8080
+// @BasePath /api/v1
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
 func New(env string, authService authService, postsService postsService) (*gin.Engine, error) {
 	var router *gin.Engine
 	switch env {
@@ -26,6 +36,10 @@ func New(env string, authService authService, postsService postsService) (*gin.E
 	handlers := handlers{
 		authService:  authService,
 		postsService: postsService,
+	}
+
+	if env != ModeProd {
+		router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	}
 
 	api := router.Group("/api")
